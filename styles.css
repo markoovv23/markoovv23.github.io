@@ -1,0 +1,410 @@
+/* =========================================================================
+   САД ПРОГРЕССА — styles.css
+   Секции:
+     1. CSS-переменные / @property
+     2. Base
+     3. Layout / общие блоки
+     4. Hero / настроения
+     5. Кнопки
+     6. Задачи
+     7. Таббар
+     8. Сад
+     9. Магазин / premium
+    10. Люди / статистика
+    11. Онбординг / toast
+    12. v4 — анимации
+    13. Чат
+    14. Пауза
+    15. Аватары
+    16. HM (главная v5) / темы
+    17. Дух
+    18. Окна v5
+   ========================================================================= */
+
+/* ===== 1. CSS-переменные / @property ===== */
+@property --s1   { syntax:'<color>';  inherits:true; initial-value:#7ec8f5 }
+@property --s2   { syntax:'<color>';  inherits:true; initial-value:#d6f0ff }
+@property --g1   { syntax:'<color>';  inherits:true; initial-value:#8fdc6b }
+@property --g2   { syntax:'<color>';  inherits:true; initial-value:#6cc455 }
+@property --h    { syntax:'<color>';  inherits:true; initial-value:#7fd36a }
+@property --sp   { syntax:'<number>'; inherits:true; initial-value:1.2 }
+@property --sun  { syntax:'<number>'; inherits:true; initial-value:1 }
+@property --haze { syntax:'<number>'; inherits:true; initial-value:0 }
+
+:root{
+  --pri:#7c5cff; --pk:#ff7eb6; --mint:#2fd1a5; --ink:#2b2750; --mut:#7d79a3;
+  transition: --s1 1.4s, --s2 1.4s, --g1 1.4s, --g2 1.4s, --h 1.4s, --sp 1.4s, --sun 1.4s, --haze 1.4s;
+}
+
+/* ===== 2. Base ===== */
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#f4efff,#e8f6ff 60%,#fff0f7);
+  min-height:100vh;
+}
+button{ font:inherit; cursor:pointer; border:0 }
+svg{ display:block }
+h1{ margin:2px 0 0; font-size:26px }
+h2{ margin:0 }
+h3{ margin:18px 0 8px }
+small{ color:var(--mut) }
+
+/* ===== 3. Layout / общие блоки ===== */
+.scr{ max-width:720px; margin:0 auto; padding:14px 14px 100px; animation:fin .45s ease }
+@keyframes fin{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+
+.row{ display:flex; align-items:center; justify-content:space-between; gap:10px }
+.card{ background:#fff; border-radius:22px; padding:16px; box-shadow:0 8px 26px rgba(124,92,255,.12); margin-top:14px }
+
+/* ===== 4. Hero / настроения ===== */
+.hero{ border-radius:26px; padding:16px; background:linear-gradient(135deg,var(--s1),var(--s2)); color:#2b2750; box-shadow:0 10px 30px rgba(124,92,255,.15) }
+.dew{ display:flex; align-items:center; gap:6px; background:#fff; border-radius:99px; padding:7px 13px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,.08) }
+.chips{ display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 8px }
+.mc{ padding:8px 13px; border-radius:99px; background:rgba(255,255,255,.65); color:var(--ink); font-weight:600; font-size:13px; transition:.3s }
+.mc.on{ background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.15); transform:translateY(-1px); outline:2px solid var(--pri) }
+.tip{ margin:6px 2px 0; font-size:14px }
+
+/* ===== 5. Кнопки ===== */
+.btn{ padding:12px 18px; border-radius:16px; background:linear-gradient(135deg,var(--pri),var(--pk)); color:#fff; font-weight:700; box-shadow:0 6px 18px rgba(124,92,255,.35); transition:.2s }
+.btn:active{ transform:scale(.97) }
+.btn.sec{ background:#efeaff; color:var(--pri); box-shadow:none }
+.btn.ghost{ background:transparent; color:var(--mut); box-shadow:none }
+.btn.sm{ padding:8px 13px; border-radius:12px; font-size:13px }
+
+/* ===== 6. Задачи ===== */
+.now{ background:linear-gradient(135deg,#fff,#f3edff); border:2px solid #e2d8ff }
+.now h2{ font-size:20px; margin:4px 0 12px }
+.bar{ height:10px; background:#ece7ff; border-radius:9px; overflow:hidden; margin-top:8px }
+.bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--mint),var(--pri)); border-radius:9px; transition:width .6s }
+.add{ display:flex; gap:8px; margin-top:14px }
+input{ font:inherit; padding:13px 14px; border-radius:16px; border:2px solid #e5defa; background:#fff; color:var(--ink); width:100%; outline:0 }
+input:focus{ border-color:var(--pri) }
+.task{ display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:12px 14px; margin-top:9px; box-shadow:0 4px 14px rgba(124,92,255,.08) }
+.task.d span{ text-decoration:line-through; color:var(--mut) }
+.task span{ flex:1 }
+.ck{ width:28px; height:28px; border-radius:50%; border:2.5px solid #c9bdf7; background:#fff; display:grid; place-items:center; padding:0; flex:none; transition:.3s }
+.task.d .ck{ background:var(--mint); border-color:var(--mint) }
+.ic{ background:none; color:var(--mut); padding:4px }
+
+/* ===== 7. Таббар ===== */
+.tabs{
+  position:fixed; left:0; right:0; bottom:0;
+  display:flex; justify-content:space-around;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  box-shadow:0 -6px 24px rgba(124,92,255,.12);
+  z-index:50;
+}
+.tab{ background:none; color:var(--mut); display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; font-weight:600; padding:4px 10px; border-radius:14px; transition:.25s }
+.tab.on{ color:var(--pri); background:#f1ebff }
+
+/* ===== 8. Сад ===== */
+.garden{
+  position:relative; overflow:hidden; border-radius:28px;
+  height:min(64vh,560px); min-height:430px;
+  background:linear-gradient(var(--s1),var(--s2) 52%);
+  box-shadow:0 12px 34px rgba(60,60,140,.25);
+  margin-top:12px; user-select:none; -webkit-user-select:none;
+}
+.garden .abs{ position:absolute; pointer-events:none }
+.ground{ left:0; right:0; top:46%; bottom:0; background:linear-gradient(var(--g1),var(--g2)) }
+.hill{ left:0; right:0; top:33%; height:18% }
+.sun{ right:7%; top:6%; width:96px; height:96px; opacity:var(--sun) }
+.sun .core{ position:absolute; inset:22px; border-radius:50%; background:radial-gradient(#fff9c4,#ffd54f); box-shadow:0 0 50px 24px rgba(255,220,100,.55) }
+.sun svg{ position:absolute; inset:0; animation:spin calc(60s*var(--sp)) linear infinite }
+.moon,.stars{ display:none }
+.glint{ border-radius:50%; background:rgba(255,255,255,.35); animation:tw calc(5s*var(--sp)) ease-in-out infinite; opacity:calc(var(--sun) * .8) }
+.cloud{ animation:drift calc(var(--d)*var(--sp)) linear infinite; left:-30%; opacity:.92 }
+@keyframes drift{ to{ left:110% } }
+@keyframes spin{ to{ transform:rotate(360deg) } }
+.bl{ position:absolute; width:3px; border-radius:3px 3px 0 0; background:linear-gradient(#5fbf55,#2f8f45); transform-origin:50% 100%; animation:sw calc(3s*var(--sp)) ease-in-out infinite alternate; pointer-events:none; opacity:.7 }
+@keyframes sw{ from{ transform:rotate(-12deg) } to{ transform:rotate(12deg) } }
+.fl{ position:absolute; bottom:-10px; width:7px; height:7px; border-radius:50%; background:#fff; box-shadow:0 0 8px #fff; animation:up calc(var(--d)*var(--sp)) linear infinite; pointer-events:none; opacity:0 }
+@keyframes up{ 0%{ transform:translate(0,0); opacity:0 } 15%{ opacity:.85 } 100%{ transform:translate(40px,-440px); opacity:0 } }
+.ff{ position:absolute; width:6px; height:6px; border-radius:50%; background:#fff7a0; box-shadow:0 0 10px 4px #ffe96b; animation:tw calc(2.4s*var(--sp)) ease-in-out infinite; pointer-events:none }
+.garden[data-tod=day] .ff{ opacity:.35 }
+.fb{ position:absolute; left:-10%; width:32px; height:32px; animation:fly calc(var(--d)*var(--sp)) linear infinite; pointer-events:none; z-index:900 }
+.fb.x{ display:none }
+:root[data-mood=res] .fb.x{ display:block }
+:root[data-mood=noise] .fb:nth-of-type(n+3){ display:none }
+@keyframes fly{ 0%{ left:-10%; transform:translateY(0) } 25%{ transform:translateY(-34px) } 50%{ transform:translateY(12px) } 75%{ transform:translateY(-26px) } 100%{ left:105%; transform:translateY(0) } }
+.haze{ inset:0; background:linear-gradient(rgba(235,228,255,.9),rgba(200,190,235,.6)); opacity:var(--haze); z-index:1500; animation:hz calc(9s*var(--sp)) ease-in-out infinite alternate }
+@keyframes hz{ to{ transform:translateX(-3%) scale(1.05) } }
+.tod{ inset:0; z-index:1600; transition:background 2s }
+.garden[data-tod=dusk]  .tod{ background:rgba(255,150,90,.16) }
+.garden[data-tod=night] .tod{ background:rgba(25,35,95,.36) }
+.garden[data-tod=night] .sun{ display:none }
+.garden[data-tod=night] .moon,
+.garden[data-tod=night] .stars{ display:block }
+.garden[data-tod=night] .glint{ display:none }
+.moon{ right:9%; top:8%; width:60px; height:60px; border-radius:50%; background:radial-gradient(#fffef0,#f1ecc0); box-shadow:0 0 40px 14px rgba(255,255,220,.45) }
+.stars{ inset:0 0 50% 0; background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(2px 2px at 55% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 75% 40%,#fff,transparent),radial-gradient(2px 2px at 35% 60%,#fff,transparent),radial-gradient(1.5px 1.5px at 88% 70%,#fff,transparent) }
+.it{ position:absolute; transform:translate(-50%,-100%); touch-action:none; cursor:grab }
+.it::after{ content:""; position:absolute; left:12%; right:12%; bottom:-3px; height:9px; border-radius:50%; background:rgba(0,0,0,.2); filter:blur(3px); transition:.25s }
+.it .art{ width:100%; height:100%; transform-origin:50% 100%; animation:sway calc(4s*var(--sp)) ease-in-out infinite alternate; transition:transform .25s,filter .25s }
+.it.tree .art{ filter:drop-shadow(0 0 10px rgba(255,248,170,.6)) }
+.it.an .art{ animation:bob calc(2.4s*var(--sp)) ease-in-out infinite alternate }
+.it.dc .art{ animation:none }
+.it.sel{ outline:2px dashed rgba(255,255,255,.9); outline-offset:4px; border-radius:12px }
+.it.drag{ z-index:1400!important; cursor:grabbing }
+.it.drag .art{ animation:none; transform:scale(1.12); filter:drop-shadow(0 16px 10px rgba(0,0,0,.28)) }
+.it.drag::after{ left:0; right:0; bottom:-10px; opacity:.6; filter:blur(7px) }
+.ro .it{ cursor:default }
+@keyframes sway{ from{ transform:rotate(-1.6deg) } to{ transform:rotate(1.6deg) } }
+@keyframes bob{ from{ transform:translateY(0) } to{ transform:translateY(-3px) } }
+.pet{ animation:fall calc(3.2s*var(--sp)) linear infinite }
+@keyframes fall{ 0%{ transform:translate(0,-25px) rotate(0); opacity:0 } 15%{ opacity:1 } 100%{ transform:translate(-10px,40px) rotate(220deg); opacity:0 } }
+.wg{ transform-origin:50px 50px; animation:flap calc(.7s*var(--sp)) ease-in-out infinite alternate }
+@keyframes flap{ from{ transform:scaleX(1) } to{ transform:scaleX(.45) } }
+.tw{ animation:tw calc(2.2s*var(--sp)) ease-in-out infinite }
+@keyframes tw{ 0%,100%{ opacity:.25 } 50%{ opacity:1 } }
+.pulse{ animation:tw calc(3.6s*var(--sp)) ease-in-out infinite; opacity:.9 }
+.bird{ animation:tw calc(2.8s*var(--sp)) ease-in-out infinite }
+.wj{ stroke-dasharray:6 5; animation:dash 1s linear infinite }
+@keyframes dash{ to{ stroke-dashoffset:-22 } }
+.sw{ transform-origin:50px 17px; animation:swg calc(2.6s*var(--sp)) ease-in-out infinite alternate }
+@keyframes swg{ from{ transform:rotate(-14deg) } to{ transform:rotate(14deg) } }
+.stm{ animation:dash 2.5s linear infinite }
+.drop{ position:absolute; top:-20px; width:8px; height:14px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%; background:#7fd3ff; box-shadow:0 0 8px #bfe8ff; animation:dr 1.4s ease-in forwards; z-index:1700; pointer-events:none }
+@keyframes dr{ to{ transform:translateY(420px); opacity:.2 } }
+.gbar{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap }
+
+/* ===== 9. Магазин / premium ===== */
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px }
+.pc{ background:#fff; border-radius:20px; padding:12px; box-shadow:0 6px 18px rgba(124,92,255,.1); display:flex; flex-direction:column; gap:6px }
+.pc .pa{ height:120px; border-radius:14px; background:linear-gradient(#e9f7ff,#e3f6df); padding:6px; display:flex; justify-content:center }
+.pc .pa .art{ width:120px; height:108px; animation:sway calc(4s*1.2) ease-in-out infinite alternate; transform-origin:50% 100% }
+.pc b{ font-size:15px }
+.pc span.ds{ font-size:12px; color:var(--mut); line-height:1.35 }
+.pc.rare{ background:linear-gradient(#fff,#fff8e6); border:2px solid #ffd76a; box-shadow:0 8px 24px rgba(255,190,60,.3) }
+.pc.rare .pa{ background:radial-gradient(circle at 50% 35%,#fff7cf,#ffe0f0 70%) }
+.tag{ font-size:11px; font-weight:700; color:#b97800; background:#ffefc2; border-radius:8px; padding:2px 8px; align-self:flex-start }
+.tag.fr{ color:#2d8a5b; background:#dcf7e8 }
+.price{ display:flex; align-items:center; gap:4px; font-weight:700; font-size:13px }
+.ov{ position:fixed; inset:0; overflow:auto; z-index:5000; background:linear-gradient(180deg,#f4efff,#fff3fa); animation:fin .35s }
+.pm{ max-width:720px; margin:0 auto; padding:16px 14px 150px }
+.blk{ padding:12px 16px; border-radius:18px; font-size:17px; margin:22px 0 4px }
+.blk.free{ background:#dcf7e8; color:#217a50 }
+.blk.gold{ background:linear-gradient(135deg,#ffd76a,#ff9ed1); color:#5a2a00 }
+.pbar{ position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.95); backdrop-filter:blur(12px); padding:12px 14px calc(12px + env(safe-area-inset-bottom)); box-shadow:0 -8px 28px rgba(124,92,255,.2); z-index:5100; text-align:center }
+.pbar .in{ max-width:720px; margin:0 auto; display:flex; gap:10px; align-items:center }
+.glow{ flex:1; padding:15px; font-size:17px; background:linear-gradient(135deg,#ff7eb6,#7c5cff,#ffb347); background-size:200% 200%; color:#fff; border-radius:18px; font-weight:800; animation:pls 2s ease-in-out infinite,bg 5s ease infinite }
+@keyframes pls{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,126,182,.6),0 6px 22px rgba(124,92,255,.45); transform:scale(1) } 50%{ box-shadow:0 0 0 12px rgba(255,126,182,0),0 8px 34px rgba(255,126,182,.8); transform:scale(1.02) } }
+@keyframes bg{ 50%{ background-position:100% 50% } }
+.cancel{ padding:15px 16px; border-radius:18px; background:#fff; border:2px solid #ddd6f5; color:var(--mut); font-weight:700 }
+
+/* ===== 10. Люди / статистика ===== */
+.fr{ display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:11px 13px; margin-top:9px; box-shadow:0 4px 14px rgba(124,92,255,.08) }
+.fr .nm{ flex:1 }
+.fr .nm b{ display:block }
+.stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px }
+.stat{ background:#fff; border-radius:16px; padding:12px; text-align:center; box-shadow:0 4px 14px rgba(124,92,255,.08) }
+.stat b{ display:block; font-size:22px }
+.stat small{ font-size:11px }
+.sw2{ display:flex; gap:8px; margin:8px 0 }
+.sw2 button{ background:none; padding:2px; border-radius:50%; border:3px solid transparent }
+.sw2 button.on{ border-color:var(--pri) }
+
+/* ===== 11. Онбординг / toast ===== */
+.ob{ min-height:100vh; display:grid; place-items:center; padding:20px }
+.ob .card{ max-width:420px; width:100% }
+.err{ color:#d6336c; font-size:13px; min-height:18px }
+#toast{ position:fixed; left:50%; bottom:92px; transform:translate(-50%,20px); background:#2b2750; color:#fff; padding:11px 18px; border-radius:14px; opacity:0; transition:.35s; z-index:9000; pointer-events:none; font-size:14px; max-width:90%; text-align:center }
+#toast.on{ opacity:1; transform:translate(-50%,0) }
+
+/* ===== 12. v4 — анимации ===== */
+body{ background:linear-gradient(160deg,#f4efff,#e4f5ff 50%,#ffeef6,#efe9ff); background-size:300% 300%; animation:bgm 22s cubic-bezier(.45,0,.55,1) infinite alternate }
+@keyframes bgm{ to{ background-position:100% 100% } }
+.btn,.mc,.tab,.pc,.fr,.card,.tcard,.tbox{ transition:transform .45s cubic-bezier(.34,1.56,.64,1),box-shadow .45s cubic-bezier(.22,1,.36,1),background .4s cubic-bezier(.22,1,.36,1),opacity .4s }
+.btn:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(124,92,255,.4) }
+.btn:active{ transform:scale(.95) }
+.pc:hover,.fr:hover{ transform:translateY(-4px); box-shadow:0 14px 30px rgba(124,92,255,.2) }
+.tab:hover{ transform:translateY(-2px) }
+.tab.on svg{ animation:bnc .6s cubic-bezier(.34,1.56,.64,1) }
+@keyframes bnc{ from{ transform:scale(.6) rotate(-12deg) } }
+@keyframes rise{ from{ opacity:0; transform:translateY(14px) scale(.96) } }
+.grid>*,.fr,.stat{ animation:rise .6s cubic-bezier(.22,1,.36,1) backwards }
+.nf .grid>*,.nf .fr,.nf .stat{ animation:none }
+.fr{ cursor:pointer }
+.pc .pa{ background:linear-gradient(#f3f0ff,#eaf8f1) }
+.pc .pa .art svg,.it .art svg{ filter:saturate(.95) drop-shadow(0 3px 4px rgba(70,50,140,.14)) }
+
+/* ===== 13. Чат ===== */
+.msgs{ display:flex; flex-direction:column; gap:10px; margin-top:14px }
+.msg{ display:flex; gap:8px; align-items:flex-end }
+.msg.u{ justify-content:flex-end }
+.msg.new{ animation:pop .55s cubic-bezier(.34,1.56,.64,1) }
+@keyframes pop{ from{ opacity:0; transform:translateY(14px) scale(.9) } }
+.bot{ flex:none; width:30px; height:30px; border-radius:50%; background:#dcf7e8; padding:5px; animation:sway 4s ease-in-out infinite alternate }
+.bub{ background:#fff; border-radius:18px 18px 18px 6px; padding:11px 14px; box-shadow:0 4px 14px rgba(124,92,255,.1); max-width:84%; line-height:1.4; word-break:break-word }
+.u .bub{ background:linear-gradient(135deg,var(--pri),var(--pk)); color:#fff; border-radius:18px 18px 6px 18px }
+.typing{ display:flex; gap:4px; padding:14px }
+.typing u{ width:7px; height:7px; border-radius:50%; background:#b7a8f5; animation:dot 1s infinite cubic-bezier(.45,0,.55,1) }
+.typing u:nth-child(2){ animation-delay:.15s }
+.typing u:nth-child(3){ animation-delay:.3s }
+@keyframes dot{ 50%{ transform:translateY(-6px); opacity:.5 } }
+.tcard{ flex:1; min-width:0; background:#fff; border-radius:22px; padding:14px; box-shadow:0 8px 24px rgba(124,92,255,.12); border:2px solid #e8e0ff }
+.tcard.fin{ border-color:#b9efd6; background:linear-gradient(#fff,#f2fff9) }
+.st{ padding:9px 6px; border-radius:16px; margin-top:4px }
+.sh{ display:flex; align-items:center; gap:10px }
+.sh span{ flex:1; line-height:1.3 }
+.n{ width:26px; height:26px; border-radius:50%; background:#efeaff; color:var(--pri); font-style:normal; font-weight:700; font-size:13px; display:grid; place-items:center; flex:none }
+.st.done .n{ background:var(--mint); color:#fff }
+.st.done span{ color:var(--mut); text-decoration:line-through }
+.st.skip{ opacity:.45 }
+.st.cur{ background:linear-gradient(135deg,#f6f1ff,#eefaff); animation:stIn .6s cubic-bezier(.22,1,.36,1) }
+.st.cur .n{ background:var(--pri); color:#fff; animation:npl 2s ease-in-out infinite }
+@keyframes stIn{ from{ opacity:.4; transform:translateX(-8px) } }
+@keyframes npl{ 50%{ box-shadow:0 0 0 6px rgba(124,92,255,.18) } }
+.dw{ display:flex; align-items:center; gap:2px; font-style:normal; font-size:12px; font-weight:700; color:#2b8ac4 }
+.sb{ display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 2px 36px }
+.cin{ position:sticky; bottom:calc(72px + env(safe-area-inset-bottom)); display:flex; gap:8px; margin-top:14px; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); padding:8px; border-radius:22px; box-shadow:0 8px 26px rgba(124,92,255,.22); z-index:20 }
+.tbox{ width:58px; height:58px; background:rgba(255,255,255,.7); border-radius:18px; padding:4px; cursor:pointer }
+.tbox.pop{ transform:scale(1.22) }
+.tbox .art{ width:100%; height:100% }
+.fd{ position:fixed; left:0; top:0; z-index:9500; pointer-events:none; margin:-14px 0 0 -14px; will-change:transform }
+.fd.md svg{ filter:drop-shadow(0 0 5px #bfe8ff) }
+.fd.lg svg{ filter:drop-shadow(0 0 8px #fff) drop-shadow(0 0 14px #7fd3ff) }
+.fd.lg::before,.fd.lg::after{ content:"✦"; position:absolute; color:#fff; font-size:11px; text-shadow:0 0 6px #7fd3ff; animation:tw .5s infinite }
+.fd.lg::before{ left:-9px; top:-7px }
+.fd.lg::after{ right:-8px; bottom:-4px; animation-delay:.25s }
+
+/* ===== 14. Пауза ===== */
+#br{ position:fixed; inset:0; z-index:9800; display:grid; place-items:center; text-align:center; padding:20px; background:radial-gradient(circle at 50% 40%,rgba(214,238,255,.97),rgba(214,200,255,.98)); opacity:0; transition:opacity .7s cubic-bezier(.22,1,.36,1); backdrop-filter:blur(12px) }
+#br.on{ opacity:1 }
+.bc{ width:130px; height:130px; margin:60px auto 70px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff,#a8d8ff 55%,#a99bff); box-shadow:0 0 60px 18px rgba(150,170,255,.55); animation:brt 8s cubic-bezier(.45,0,.55,1) infinite }
+@keyframes brt{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.75) } }
+#bt{ font-size:28px; font-weight:700; color:#4a3f9a; display:block; height:38px }
+
+/* ===== 15. Аватары ===== */
+.av2{ position:relative; flex:none; display:inline-block }
+.av2>*{ position:absolute; display:block }
+.abg{ inset:11%; border-radius:50%; background:#efe9ff; overflow:hidden }
+.abg::after{ content:""; position:absolute; inset:0 }
+.afig{ inset:11%; width:78%; height:78%; border-radius:50% }
+.afr{ inset:0; width:100%; height:100%; animation:fpl 2.8s cubic-bezier(.45,0,.55,1) infinite alternate }
+@keyframes fpl{ from{ transform:scale(.96); filter:drop-shadow(0 0 2px var(--gc)) } to{ transform:scale(1.03); filter:drop-shadow(0 0 8px var(--gc)) } }
+.bg-sunset{ background:linear-gradient(160deg,#ffb26b,#ff6fa5 50%,#7c5cff,#ffb26b); background-size:100% 300%; animation:bgy 7s cubic-bezier(.45,0,.55,1) infinite alternate }
+@keyframes bgy{ to{ background-position:0 100% } }
+.bg-forest{ background:linear-gradient(#3aa56b,#0f4a39); animation:brz 4s ease-in-out infinite alternate }
+.bg-forest::after{ background:linear-gradient(105deg,transparent 30%,rgba(255,255,190,.45) 40%,transparent 50%,transparent 62%,rgba(255,255,190,.3) 70%,transparent 78%); animation:ray 5s ease-in-out infinite alternate }
+@keyframes ray{ from{ transform:translateX(-14%); opacity:.5 } to{ transform:translateX(14%); opacity:1 } }
+@keyframes brz{ to{ filter:brightness(1.22) } }
+.bg-night{ background:linear-gradient(#0f1238,#3a2f7a) }
+.bg-night::after{ background:radial-gradient(1.5px 1.5px at 20% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 70% 18%,#fff,transparent),radial-gradient(2px 2px at 45% 60%,#fff,transparent),radial-gradient(1.5px 1.5px at 80% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 25% 82%,#fff,transparent); animation:tw 2.4s ease-in-out infinite }
+.bg-meadow{ background:radial-gradient(circle at 20% 78%,#ff9ecb 0 4px,transparent 5px),radial-gradient(circle at 55% 86%,#fff 0 4px,transparent 5px),radial-gradient(circle at 82% 74%,#ffd23f 0 4px,transparent 5px),linear-gradient(#bfe9ff 48%,#8fdc6b 48%); animation:brz 3s ease-in-out infinite alternate }
+.bg-water{ background:linear-gradient(#8fd8ff,#3b86d8) }
+.bg-water::after{ background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(255,255,255,.55) 9px 13px); background-size:100% 40px; animation:wf 1s linear infinite }
+@keyframes wf{ to{ background-position:0 40px } }
+.gav{ position:absolute; left:12px; top:12px; z-index:1700; filter:drop-shadow(0 6px 10px rgba(0,0,0,.2)) }
+.orow{ display:flex; gap:8px; overflow-x:auto; padding:4px }
+.orow button{ background:none; border-radius:50%; border:3px solid transparent; padding:2px; flex:none; transition:.35s cubic-bezier(.34,1.56,.64,1) }
+.orow button.on{ border-color:var(--pri); transform:scale(1.08) }
+
+/* ===== 16. HM (главная v5) / темы ===== */
+@property --xa1 { syntax:'<color>'; inherits:true; initial-value:#fbe3e8 }
+@property --xa2 { syntax:'<color>'; inherits:true; initial-value:#e3d8f2 }
+@property --xa3 { syntax:'<color>'; inherits:true; initial-value:#d6ebdc }
+@property --xb1 { syntax:'<color>'; inherits:true; initial-value:#e9a6d2 }
+@property --xb2 { syntax:'<color>'; inherits:true; initial-value:#b3a2e6 }
+@property --xink{ syntax:'<color>'; inherits:true; initial-value:#4a3d5c }
+@property --xg  { syntax:'<color>'; inherits:true; initial-value:rgba(255,255,255,.5) }
+@property --xgm { syntax:'<color>'; inherits:true; initial-value:rgba(255,255,255,.85) }
+
+body{
+  --xa1:#fbe3e8; --xa2:#e3d8f2; --xa3:#d6ebdc;
+  --xb1:#e9a6d2; --xb2:#b3a2e6; --xink:#4a3d5c;
+  --xg:rgba(255,255,255,.5); --xgm:rgba(255,255,255,.85);
+  --xh1:#cfe6d2; --xh2:#bcd9cc; --xbt:#3e3354;
+  --xsh:rgba(184,168,208,.4); --xsh2:rgba(240,150,190,.5); --xt:1;
+  transition:--xa1 .8s,--xa2 .8s,--xa3 .8s,--xb1 .8s,--xb2 .8s,--xink .8s,--xg .8s,--xgm .8s;
+}
+body.xm-fog  { --xt:1.8; --xsh:rgba(120,115,160,.3); --xsh2:rgba(140,135,180,.35); --xa1:#cfcce0; --xa2:#bdb9d3; --xa3:#c6cbd8; --xb1:#b9b4d0; --xb2:#a29fc2; --xink:#4f4a68; --xg:rgba(238,236,247,.45); --xgm:rgba(240,238,248,.88); --xh1:#b4b3cc; --xh2:#a5a5c0; --xbt:#383452 }
+body.xm-noise{ --xt:2.2; --xsh:rgba(8,6,28,.55); --xsh2:rgba(20,16,50,.5); --xa1:#2a2548; --xa2:#1f1b3d; --xa3:#1a1736; --xb1:#6a5c9c; --xb2:#4c4380; --xink:#ddd7ee; --xg:rgba(46,41,80,.55); --xgm:rgba(36,32,66,.94); --xh1:#2d2757; --xh2:#241f49; --xbt:#f1ecff }
+body.xm-res  { --xt:.6; --xsh:rgba(210,130,230,.45); --xsh2:rgba(255,130,200,.75); --xa1:#ffc4dc; --xa2:#d8bfff; --xa3:#ffe2b6; --xb1:#ff8fc2; --xb2:#9a7bff; --xh1:#ffd8a8; --xh2:#ffc2d2; --xbt:#fff }
+body.hm-on{ background:linear-gradient(160deg,var(--xa1),var(--xa2) 55%,var(--xa3)) fixed; animation:none; background-size:auto }
+
+#art{ display:none; position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none }
+body.hm-on #art{ display:block }
+#art .h1{ fill:var(--xh1) }
+#art .h2{ fill:var(--xh2) }
+#art .cl{ fill:#fff; opacity:.5 }
+#art .sx{ opacity:0; transition:opacity 2s }
+body.xm-noise #art .sx{ opacity:1 }
+body.xm-noise #art .cl{ opacity:.06 }
+#art .bb{ animation:xdrift calc(var(--xt)*22s) ease-in-out infinite alternate }
+@keyframes xdrift{ to{ transform:translate(40px,26px) } }
+body.hm-on .scr{ position:relative; z-index:1 }
+
+.xic{ display:inline-block; vertical-align:middle; flex:none }
+.gl{ background:var(--xg); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.7); border-radius:28px; box-shadow:0 12px 34px var(--xsh); padding:18px; margin:14px 0 }
+.hm{ color:var(--xink); font-family:Nunito,system-ui,sans-serif }
+.hm h1,.hm h2{ font-family:Comfortaa,system-ui,sans-serif }
+.hm.fresh>*{ animation:xrise calc(var(--xt)*.9s) cubic-bezier(.22,.8,.3,1) both }
+.hm.fresh>*:nth-child(2){ animation-delay:calc(var(--xt)*.1s) }
+.hm.fresh>*:nth-child(3){ animation-delay:calc(var(--xt)*.2s) }
+.hm.fresh>*:nth-child(4){ animation-delay:calc(var(--xt)*.3s) }
+@keyframes xrise{ from{ opacity:0; transform:translateY(18px) scale(.98) } }
+@keyframes xbreath{ 50%{ transform:scale(1.025) } }
+@keyframes xpulse{ 50%{ transform:scale(1.03); box-shadow:0 0 42px var(--xsh2),0 12px 34px var(--xsh) } }
+.hm .hh{ display:flex; align-items:center; gap:12px }
+.hm .hg{ flex:1; min-width:0 }
+.hm h1{ font-size:1.5rem; margin:.2em 0 }
+.hm .dew.gl{ background:var(--xg); margin:0; border-radius:22px; padding:8px 14px; font-weight:800; color:inherit; box-shadow:0 6px 18px var(--xsh) }
+.hm .tbox{ background:var(--xg) }
+.xch{ display:flex; gap:8px; margin-top:10px }
+.hm .mc.chip{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:22px; padding:10px 6px; background:var(--xg); border:2px solid transparent; font-weight:700; font-size:.78rem; color:inherit; outline:0 }
+.hm .mc.chip.on{ border-color:var(--xb2); background:linear-gradient(135deg,color-mix(in srgb,var(--xb1) 40%,transparent),color-mix(in srgb,var(--xb2) 40%,transparent)); box-shadow:0 6px 20px var(--xsh2); outline:0; transform:none }
+.hm .btn{ background:var(--xg); color:inherit; border:1px solid rgba(255,255,255,.7); border-radius:22px; box-shadow:0 6px 18px var(--xsh) }
+.hm .btn.go,.hm .sb .btn:not(.sec):not(.ghost){ background:linear-gradient(135deg,var(--xb1),var(--xb2)); color:var(--xbt); border-color:transparent; animation:xbreath calc(var(--xt)*4.5s) ease-in-out infinite }
+.hm .btn.ghost{ background:none; border:0; box-shadow:none }
+.hm .sign{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; background:linear-gradient(#e6c59c,#c79c6c); border:3px solid #a97f55; border-radius:26px; color:#5b3d22; font-family:Comfortaa,sans-serif; font-weight:700; font-size:1.2rem; padding:20px; position:relative; box-shadow:0 10px 26px rgba(169,127,85,.35); margin:14px 0; transition:transform .5s }
+body.xm-noise .hm .sign{ background:linear-gradient(#6b5a52,#52443f); border-color:#3d312e; color:#e8d8cc }
+.hm .sign:before,.hm .sign:after{ content:""; position:absolute; top:12px; width:9px; height:9px; border-radius:50%; background:#8d6a45 }
+.hm .sign:before{ left:16px }
+.hm .sign:after{ right:16px }
+.hm .sign:hover{ transform:scale(1.02) }
+.hm .sign:active{ transform:scale(.96) }
+.hm .prem{ display:flex; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg,#f6a8cf,#c3a6f5 60%,#a98cf0); color:#fff; font-size:1.1rem; padding:16px 26px; width:100%; border-radius:30px; font-weight:800; text-shadow:0 1px 6px rgba(120,80,160,.4); box-shadow:0 0 26px var(--xsh2),0 10px 30px var(--xsh); animation:xpulse calc(var(--xt)*3.2s) ease-in-out infinite; margin:6px 0 14px }
+.hm .tcard{ background:var(--xg); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.7); border-radius:28px; box-shadow:0 12px 34px var(--xsh) }
+.hm .tcard.fin{ background:color-mix(in srgb,#b9efd6 35%,var(--xg)) }
+.hm .bub{ background:var(--xgm); color:var(--xink); box-shadow:0 6px 18px var(--xsh) }
+.hm .u .bub{ background:linear-gradient(135deg,var(--xb1),var(--xb2)); color:var(--xbt) }
+.hm .st.cur{ background:var(--xg) }
+.hm .st.cur span{ font-family:Quicksand,sans-serif; font-weight:700; font-size:1.12rem }
+.hm .n{ background:var(--xg); color:inherit }
+.hm .st.cur .n{ background:var(--xb2); color:var(--xbt) }
+.hm .bar{ background:var(--xg) }
+.hm .bar i{ background:linear-gradient(90deg,var(--xb2),var(--xb1)) }
+.hm small{ color:inherit; opacity:.78 }
+.hm .tag{ background:var(--xg); color:inherit }
+.hm .cin{ background:var(--xg); backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.7); padding:8px; margin:14px 0; border-radius:26px }
+.hm input{ background:var(--xgm); border:1px solid var(--xb2); color:var(--xink); border-radius:20px }
+.rec{ animation:xbreath .7s infinite }
+.sps{ display:flex; gap:12px; align-items:center }
+.sayt{ font-family:Quicksand,sans-serif; font-weight:700; font-size:1.05rem }
+.tab{ padding:4px 6px }
+
+/* ===== 17. Дух ===== */
+.sprt{ position:absolute; z-index:1650; width:var(--sz,70px); height:var(--sz,70px); left:30%; top:40%; cursor:pointer; transform:translate(-50%,-50%); animation:sfly 18s ease-in-out infinite }
+@keyframes sfly{ 0%,100%{ left:18%; top:42% } 25%{ left:44%; top:26% } 50%{ left:74%; top:46% } 75%{ left:52%; top:34% } }
+.sprt .sbody{ width:100%; height:100%; animation:sbob 2.4s ease-in-out infinite alternate; filter:drop-shadow(0 0 8px var(--gc)) drop-shadow(0 0 20px var(--gc)) }
+.sprt .aura{ position:absolute; inset:-35%; border-radius:50%; background:radial-gradient(var(--gc),transparent 65%); opacity:.45; animation:tw 3s ease-in-out infinite; pointer-events:none }
+.sprt.rx .sbody{ animation:srx .9s ease,sbob 2.4s ease-in-out .9s infinite alternate }
+@keyframes sbob{ to{ transform:translateY(-8px) } }
+@keyframes srx{ 40%{ transform:scale(1.4) rotate(14deg) } }
+.sprt.mini{ position:relative; animation:none; left:auto; top:auto; transform:none; flex:none }
+.crn{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); color:#ffd23f; text-shadow:0 0 8px #ffd23f; font-style:normal; font-size:16px }
+.sprBig{ position:relative; width:150px; height:150px; margin:0 auto }
+.sprBig svg{ width:100%; height:100%; filter:drop-shadow(0 0 12px var(--gc)) drop-shadow(0 0 28px var(--gc)); animation:sbob 2.4s ease-in-out infinite alternate }
+.sbub{ position:absolute; z-index:1800; background:#fff; color:#2b2750; padding:8px 12px; border-radius:14px; font-size:13px; max-width:190px; box-shadow:0 6px 16px rgba(0,0,0,.2); transform:translate(-50%,-125%); pointer-events:none; animation:pop .4s }
+
+/* ===== 18. Окна v5 ===== */
+.xov{ position:fixed; inset:0; z-index:6000; display:grid; place-items:center; padding:14px; background:rgba(60,50,100,.35); backdrop-filter:blur(10px) }
+.xb2{ max-width:480px; width:100%; max-height:88vh; overflow:auto; background:rgba(255,255,255,.95); border-radius:26px; padding:18px; color:var(--ink); animation:fin .35s }
+.xb2 p{ line-height:1.45 }
+.xb2 .task span{ font-size:14px }
