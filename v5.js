@@ -1,10 +1,7 @@
 /* =========================================================================
    САД ПРОГРЕССА — v5.js
-   Слой v5: дизайн главной, премиум-хаб, дух сада, все премиум-функции.
-   ВАЖНО: подключается ПОСЛЕ v4.js.
    ========================================================================= */
 
-/* ---------- 0. Состояние премиум-слоя ---------- */
 S.pm = Object.assign(
   { mem:[], falls:[], log:[],
     sp:{ k:'spirit', name:'Лучик', ch:'kind', vo:'soft', gl:'#9ff5d0' },
@@ -12,7 +9,6 @@ S.pm = Object.assign(
   S.pm || {}
 );
 
-/* ---------- 1. Иконки v5 ---------- */
 const XP = {
   fog:   '<path d="M7 17a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8a4.5 4.5 0 0 1 .5 9z" fill="currentColor" fill-opacity=".2"/><path d="M5 21h6M13 21h6"/>',
   noise: '<path d="M2 7q2.5-3 5 0t5 0 5 0 5 0M2 12q2.5-3 5 0t5 0 5 0 5 0M2 17q2.5-3 5 0t5 0 5 0 5 0"/>',
@@ -25,7 +21,6 @@ const XP = {
 const xi = (n, s=24) => `<svg class="xic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${XP[n]}</svg>`;
 IC.spirit = '<path d="M12 3c4 2 6 6 5 10-1 4-3 6-5 8-2-2-4-4-5-8-1-4 1-8 5-10z"/><circle cx="10" cy="11" r="1"/><circle cx="14" cy="11" r="1"/>';
 
-/* ---------- 2. Дух: справочники, уровни, речь ---------- */
 const P1 = () => sub() ? true : (toast('Это функция Премиума'), openPremium(), false);
 const SPK = { fairy:'Феечка', gnome:'Гномик', fox:'Лисёнок', owl:'Сова', spirit:'Дух леса', dragon:'Дракон' };
 const SPC = { kind:'Добрый', wise:'Мудрый', play:'Озорной', calm:'Спокойный' };
@@ -87,7 +82,6 @@ document.addEventListener('click', e => {
   react(t);
 });
 
-/* ---------- 3. Главная: дизайн из файла 2 ---------- */
 const moodChips2 = () => Object.keys(MOODS).map(k =>
   `<button class="mc chip ${S.mood==k?'on':''}" data-k="${k}" onclick="setMood('${k}')">${xi(k,30)}${MOODS[k].n}</button>`
 ).join('');
@@ -113,7 +107,6 @@ tasksS = function(){
   </div>`;
 };
 
-/* ---------- 4. Обёртки setMood / tabbar / garden / openPremium ---------- */
 const _sm5 = setMood;
 setMood = function(k){
   _sm5(k);
@@ -143,7 +136,6 @@ openPremium = function(){
   </div>`);
 };
 
-/* ---------- 5. Окна ---------- */
 const xc = () => { const o = $('#xo'); o && o.remove(); };
 const xh = t => `<div class="row"><h2>${t}</h2><button class="btn sm sec" onclick="xc()">Закрыть</button></div>`;
 function xm(h){
@@ -157,9 +149,27 @@ function xm(h){
 const tg = (k,f) => { S.pm[k] = S.pm[k] ? 0 : 1; save(); f(); };
 const cb = (on, l, fn) => `<button class="btn sm ${on?'':'sec'}" onclick="${fn}">${l}: ${on?'вкл':'выкл'}</button>`;
 
-/* ---------- 6. Премиум-функции ---------- */
+// ИЗМЕНЕНО: Запрос к llama.cpp
+async function askT(p){
+  try {
+    const response = await fetch('/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "sber",
+        messages: [{ role: "user", content: p }],
+        temperature: 0.7,
+        max_tokens: 300
+      })
+    });
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch(e) {
+    console.error("Ошибка ИИ:", e);
+    return null;
+  }
+}
 
-/* 6.1 Голосовой ввод */
 function micOn(){
   if (!P1()) return;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -173,8 +183,12 @@ function micOn(){
   try { r.start(); } catch(e) {}
 }
 
-/* 6.2 Чат-компаньон */
-function companion(){
+// ИЗМЕНЕНО: Использует ИИ через askT
+async function companion(userMessage){
+  const prompt = `Пользователь пишет: "${userMessage}". Ответь ему как поддерживающий психолог. Будь мягким, кратким (до 30 слов) и предложи сделать один маленький шаг.`;
+  const aiResponse = await askT(prompt);
+  if (aiResponse) return aiResponse;
+
   const p = S.pm, l = p.mem.slice(-1)[0];
   const a = ['Слышу тебя. Это правда непросто.'];
   if (l) a.push(`Помню, недавно ты брался(лась) за «${l.t}». Начать уже было шагом.`);
@@ -204,8 +218,14 @@ sendTask = async function(){
   const el = $('#ci'), v = el.value.trim(); if (!v) return;
   if (sub() && /тяжело|не могу|устал|плохо|срыв|сорвал|тревож|страшно|ничего не получается|выгор/i.test(v)) {
     el.value = '';
-    const n0 = S.chat.length, t = companion();
-    S.chat.push({ r:'u', t:v }, { r:'b', t });
+    const n0 = S.chat.length;
+    S.chat.push({ r:'u', t:v }, { r:'typing' });
+    paintChat(n0, 1);
+    
+    const t = await companion(v); // Ждем реальный ответ от ИИ
+    
+    S.chat = S.chat.filter(m => m.r != 'typing');
+    S.chat.push({ r:'b', t });
     save(); paintChat(n0, 1); react(t);
     return;
   }
@@ -237,12 +257,10 @@ function xChat(){
   xm(xh('Чат-компаньон') + `<p>Чат помнит твои задачи, успехи и срывы и отвечает точнее. В памяти: задач ${p.mem.length}, шагов ${p.log.length}, записей в дневнике ${p.falls.length}.</p><p><small>Напиши в чате «мне тяжело» — отвечу не по шаблону. Микрофон рядом с полем ввода — голосовой ввод.</small></p><button class="btn sm sec" onclick="S.pm.mem=[];save();xChat()">Забыть мои прошлые задачи</button>`);
 }
 
-/* 6.3 Адаптивные задачи */
 function xAdapt(){
   xm(xh('Адаптивные задачи') + `<p>Новые задачи подстраиваются: в тумане и после срывов шаги мягче и начинаются с вдоха; в шуме — короче; в ресурсе — добавляется бонусный шаг.</p>${cb(S.pm.ad !== 0,'Подстройка','S.pm.ad=S.pm.ad===0?1:0;save();xAdapt()')}`);
 }
 
-/* 6.4 Мягкие напоминания */
 let lastAct = Date.now();
 ['pointerdown','keydown'].forEach(e => addEventListener(e, () => lastAct = Date.now()));
 const gentle = () => S.mood == 'fog' || S.mood == 'noise'
@@ -262,7 +280,6 @@ function xRem(){
   xm(xh('Мягкие напоминания') + `<p>Никаких «ты не сделал». Если ты молчишь, я мягко спрошу, как дела, с учётом настроения.</p>${cb(r.on,'Напоминания',"S.pm.rem.on=S.pm.rem.on?0:1;save();try{Notification.requestPermission()}catch(e){}xRem()")}<h3>Если тебя нет</h3><div class="chips">${[15,30,60].map(m => `<button class="mc ${r.min==m?'on':''}" style="background:#f4f0ff" onclick="S.pm.rem.min=${m};save();xRem()">${m} мин</button>`).join('')}</div><button class="btn sm sec" onclick="toast(gentle())">Показать пример</button>`);
 }
 
-/* 6.5 Дневник срывов */
 const TRG = ['Усталость','Шум и отвлечения','Тревога','Перфекционизм','Скука','Не знал(а), с чего начать'];
 let ftr = -1;
 function fallAnalysis(){
@@ -288,7 +305,6 @@ function fAdd(){
   xFall();
 }
 
-/* 6.6 Совместные задачи */
 let SH = null, shTi, BC = null;
 try {
   BC = new BroadcastChannel('sad-co');
@@ -333,21 +349,10 @@ function shStep(){
   if (SH.me >= SH.n) toast('Твоя часть готова. +2 капельки за каждый шаг');
 }
 
-/* 6.7 Голос «Рядом» */
 function xVoice(){
   xm(xh('Голос «Рядом»') + `<p>Дух сада комментирует голосом: читает первый шаг, хвалит после каждого и называет следующий. Голос — тот, что выбран для Духа.</p>${cb(S.pm.voice,'Голос',"S.pm.voice=S.pm.voice?0:1;save();xVoice()")}<div class="chips">${Object.keys(SPV).map(k => `<button class="mc ${S.pm.sp.vo==k?'on':''}" style="background:#f4f0ff" onclick="S.pm.sp.vo='${k}';save();xVoice()">${SPV[k][0]}</button>`).join('')}</div><button class="btn sm sec" onclick="say('Я рядом. Давай сделаем один маленький шаг.')">Послушать</button>`);
 }
 
-/* 6.8 Глубокий ИИ-разбор */
-async function askT(p){
-  try {
-    if (AI_URL) return await (await fetch(AI_URL, {
-      method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ prompt:p })
-    })).text();
-    if (window.claude && claude.complete) return await Promise.race([claude.complete(p), new Promise((_,j) => setTimeout(j,15000))]);
-  } catch(e) {}
-  return null;
-}
 function deepLocal(t){
   const h = t.s.filter(x => x.w >= 4).map(x => '«'+x.t+'»').slice(0,2).join(' и ');
   return `Почему трудно: в «${t.t}» ${t.s.length} шагов${h ? ', самые тяжёлые — '+h : ''}. Обычно сложно не само дело, а старт: нет понятного первого движения и сразу много решений.
@@ -367,7 +372,6 @@ async function deep(id){
   e.textContent = a ? String(a).trim() : deepLocal(t);
 }
 
-/* 6.9 Экспорт */
 const dl = (n, tx, ty) => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([tx], { type:ty }));
@@ -408,7 +412,6 @@ function xEx(){
   xm(xh('Экспорт в жизнь') + `<p>Выгрузка невыполненных шагов (${exItems().length}).</p><div class="gbar"><button class="btn sm" onclick="exGo('ics')">Календарь (.ics)</button><button class="btn sm" onclick="exGo('todo')">Todoist (CSV)</button><button class="btn sm" onclick="exGo('notion')">Notion (CSV)</button></div><small>.ics открывается в Google, Apple и Outlook календарях. В Todoist и Notion файл импортируется через «Импорт».</small>`);
 }
 
-/* 6.10 Квесты месяца */
 const QN = ['Ночь снежинок','Свечи в сугробах','Пробуждение ручьёв','Праздник сакуры','Майский цветень','Лето светлячков','Радужный дождь','Золотые колосья','Ярмарка тыкв','Лес в янтаре','Туманный месяц','Звёздный год'];
 const QR = ['crystal','wisteria','arch','pond','stonelamp','rabbit'];
 function qData(){
@@ -437,7 +440,6 @@ function qF(mk){
   save(); toast(IT[k][0]+' в саду'); xQ();
 }
 
-/* ---------- 7. Хаб премиум-функций ---------- */
 const FT = [
   ['chat',  'Глубокий чат-компаньон', 'Помнит задачи, срывы, успехи. Голосовой ввод.', xChat],
   ['adapt', 'Адаптивные задачи',       'Шаги подстраиваются под настроение и опыт.',    xAdapt],
@@ -456,7 +458,6 @@ const hubHTML = () => `<h3>Премиум-функции</h3><div class="grid">$
 const cr = (o, k, f = v => v) => Object.keys(o).map(i => `<button class="mc ${S.pm.sp[k]==i?'on':''}" style="background:#f4f0ff" onclick="spS('${k}','${i}')">${f(o[i])}</button>`).join('');
 function spTalk(){ const t = spSay(); $('#sps').textContent = t; react(t); }
 
-/* ---------- 8. Экран Духа ---------- */
 function spiritS(){
   const p = S.pm.sp, L = lvl();
   const v = S.done*2 + S.pm.log.length/2;
@@ -492,7 +493,6 @@ function spiritS(){
     ${hubHTML()}`;
 }
 
-/* ---------- 9. Финальный render ---------- */
 const _r5 = render;
 render = function(){
   document.body.className = 'xm-' + S.mood + (S.user && tab == 'tasks' ? ' hm-on' : '');
