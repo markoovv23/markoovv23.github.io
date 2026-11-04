@@ -1,11 +1,7 @@
 /* =========================================================================
    САД ПРОГРЕССА — v4.js
-   Слой v4: чат, капли, пауза, аватары, магазин, drag-drop духа.
-   ВАЖНО: подключается ПОСЛЕ core.js и переопределяет часть его функций.
    ========================================================================= */
 
-/* ---------- 1. Константы и состояние v4 ---------- */
-const AI_URL = ''; // POST {prompt} -> JSON [{t,w}]
 const SZ  = n => n<=4 ? 'sm' : n<=6 ? 'md' : 'lg';
 const dsz = { sm:12, md:18, lg:28 };
 
@@ -18,7 +14,6 @@ let bti, rounds = 0, lt, lf;
 const SPR = '<svg viewBox="0 0 24 24"><path d="M12 21v-9M12 13c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z" fill="#5fc66a"/></svg>';
 IC.send = '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>';
 
-/* ---------- 2. Новые предметы (v4) ---------- */
 Object.assign(ART, {
   crystal: () => V(
     '<defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eefcff"/><stop offset=".5" stop-color="#a5dcff"/><stop offset="1" stop-color="#b79cff"/></linearGradient></defs>'
@@ -91,9 +86,8 @@ Object.assign(IT, {
   stonelamp: ['Каменный фонарь','dc',1,70,35,'Тёплый огонёк внутри резного камня.'],
   rabbit:    ['Ушастик','an',1,55,40,'Пушистый белый зайчик с розовыми ушками.']
 });
-Object.keys(IT).forEach(k => { if (IT[k][2]) IT[k][4] *= 3; }); // премиум стоит дорого
+Object.keys(IT).forEach(k => { if (IT[k][2]) IT[k][4] *= 3; });
 
-/* ---------- 3. Аватары ---------- */
 const ey = (y=52,c='#2b2750',s=2.7) => C(40,y,s,c) + C(60,y,s,c);
 const sm = y => L(`M44 ${y}q6 5 12 0`,'#2b2750',1.8);
 const ch = y => C(33,y,3.5,'#ff8fae','opacity=".45"') + C(67,y,3.5,'#ff8fae','opacity=".45"');
@@ -149,7 +143,6 @@ function avatar(u, s=64){
   </div>`;
 }
 
-/* друзья: у каждого свой аватар */
 Object.keys(DB).forEach((n,i) => {
   const u = DB[n];
   u.av = ['fox','owl','dragon','deer','spirit','gardener'][i%6];
@@ -157,14 +150,12 @@ Object.keys(DB).forEach((n,i) => {
   u.bg = Object.keys(BGS)[1+i%5];
 });
 
-/* ---------- 4. Миграция состояния ---------- */
 S.chat  = S.chat  || [];
 S.own   = S.own   || {};
 S.gifts = S.gifts || {};
 if (S.user && !S.user.av) Object.assign(S.user, { av:'gnome', fr:'none', bg:'none' });
 if (!S.chat.length) S.chat.push({ r:'b', t:'Привет! Напиши любую задачу — я разобью её на маленькие шаги именно под неё. За каждый шаг ты получишь капельки для своего дерева.' });
 
-/* ---------- 5. Нейронка: разбиение на шаги ---------- */
 const KB = [
   [/алгебр|геометр|математ|физик|хими|уроки|домашк|контрольн|биолог|истори|литератур/,['Открой тетрадь~1','Возьми ручку~1','Прочитай задание~2','Посмотри пример~2','Попробуй решить первую строчку~4','Проверь, сошёлся ли ответ~3']],
   [/посуд|тарел|кастрюл/,['Подойди к раковине~1','Включи воду~1','Возьми тарелку~1','Нанеси средство~2','Помой одну тарелку~4','Смой пену и поставь сушиться~3']],
@@ -202,25 +193,36 @@ const microSplit = x => [
   { t:'Сделай самое маленькое движение в эту сторону', w:1 },
   { t:`Теперь сделай: «${x.t}»`, w:Math.max(2, x.w-1) }
 ];
+
+// ИЗМЕНЕНО: Теперь используем llama.cpp
 async function ask(p){
   try {
-    let r;
-    if (AI_URL) r = await (await fetch(AI_URL, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ prompt:p })
-    })).text();
-    else if (window.claude && claude.complete) r = await Promise.race([claude.complete(p), new Promise((_,j) => setTimeout(j,15000))]);
-    else return null;
-
-    const a = JSON.parse(String(r).replace(/```json|```/g,'').trim());
+    const response = await fetch('/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "sber",
+        messages: [
+          { role: "system", content: "Ты — помощник. Разбивай задачи на маленькие шаги. Отвечай ТОЛЬКО валидным JSON-массивом в формате [{\"t\":\"текст шага\",\"w\":1-5}], где w — сложность. Никакого лишнего текста." },
+          { role: "user", content: p }
+        ],
+        temperature: 0.5,
+        max_tokens: 500
+      })
+    });
+    const data = await response.json();
+    let text = data.choices[0].message.content;
+    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const a = JSON.parse(text);
     return Array.isArray(a) && a.length
-      ? a.slice(0,10).map(x => ({ t:String(x.t).slice(0,90), w:Math.min(5,Math.max(1,+x.w||1)) }))
+      ? a.slice(0, 10).map(x => ({ t: String(x.t).slice(0, 90), w: Math.min(5, Math.max(1, +x.w || 1)) }))
       : null;
-  } catch(e) { return null; }
+  } catch(e) {
+    console.error("Ошибка разбора ИИ:", e);
+    return null;
+  }
 }
 
-/* ---------- 6. Чат ---------- */
 const tk = id => S.tasks.find(t => t.id == id);
 function taskCard(t){
   const n  = t.s.length, sz = SZ(n), ci = t.s.findIndex(x => !x.d && !x.k);
@@ -326,7 +328,6 @@ async function stepHelp(id, i){
   save(); paintChat();
 }
 
-/* ---------- 7. Капли к дереву ---------- */
 const syncDew = () => document.querySelectorAll('.dew').forEach(e => e.innerHTML = dropI() + shown);
 function flyDrops(rc, w, sz){
   const t = $('#tree');
@@ -355,7 +356,6 @@ function flyDrops(rc, w, sz){
   }
 }
 
-/* ---------- 8. Пауза (дыхательный круг) ---------- */
 function pauseB(){
   if ($('#br')) return;
   const o = document.createElement('div');
@@ -378,7 +378,6 @@ function pauseB(){
 function brMore(){ rounds++; $('#bn').textContent = 'Побудь здесь, сколько нужно. Я подожду. Кругов: ' + rounds; toast('Отдыхаем дальше'); }
 function brEnd(){ clearInterval(bti); const o = $('#br'); o.classList.remove('on'); setTimeout(() => o.remove(), 700); }
 
-/* ---------- 9. Магазин v4 (аватарки/обводки/фоны) ---------- */
 function cosGrid(k){
   return `<div class="grid">${Object.entries(CAT[k]).map(([id,d]) => {
     const own = !d[1] || S.own[k+':'+id];
@@ -418,7 +417,6 @@ function shopS(){
          <h3>Премиум</h3><div class="grid">${fl.filter(k =>  IT[k][2]).map(k => card(k,1,1)).join('')}</div>`}`;
 }
 
-/* ---------- 10. Профиль v4 ---------- */
 const optRow = k => `<div class="orow">${Object.entries(CAT[k])
   .filter(([id,d]) => !d[1] || S.own[k+':'+id])
   .map(([id]) => `<button class="${(S.user[k]||'none')==id?'on':''}" onclick="pick('${k}','${id}')">${avatar(
@@ -449,7 +447,6 @@ function meS(){
     </div>`;
 }
 
-/* ---------- 11. Соседи v4 ---------- */
 function row(n){
   const u = DB[n];
   return `<div class="fr" onclick="openF('${n}')">${avatar(u,52)}
@@ -490,7 +487,6 @@ water = n => {
   toast('@'+n+' получил(а) 3 капельки');
 };
 
-/* ---------- 12. Обёртки сцены / таббара / garden ---------- */
 const _sc = scene;
 scene = function(i, c){
   const h = _sc(i, c);
@@ -503,7 +499,6 @@ gardenS = function(){ curAv = S.user; const h = _gs(); curAv = null; return h; }
 const _tb = tabbar;
 tabbar = () => _tb().replace('Задачи', 'Чат');
 
-/* ---------- 13. Онбординг v4 ---------- */
 function onboard(){
   $('#app').innerHTML = `<div class="ob"><div class="card">
     <h1>Сад Прогресса</h1>
@@ -526,7 +521,6 @@ function reg(){
   save(); render();
 }
 
-/* ---------- 14. Плавный render ---------- */
 const _rd = render;
 render = function(){
   if (flying == 0) shown = S.dew;
