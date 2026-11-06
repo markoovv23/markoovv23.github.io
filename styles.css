@@ -408,3 +408,21 @@ body.xm-noise .hm .sign{ background:linear-gradient(#6b5a52,#52443f); border-col
 .xb2{ max-width:480px; width:100%; max-height:88vh; overflow:auto; background:rgba(255,255,255,.95); border-radius:26px; padding:18px; color:var(--ink); animation:fin .35s }
 .xb2 p{ line-height:1.45 }
 .xb2 .task span{ font-size:14px }
+
+
+/* ===== Daily gift + gentle reminders ===== */
+#dailyGiftLayer{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(55,45,75,.28);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+#dailyGiftLayer.show{display:flex;animation:giftFade .45s ease both}
+@keyframes giftFade{from{opacity:0}to{opacity:1}}
+.daily-gift-card{width:min(440px,100%);padding:30px 25px 25px;border:1px solid rgba(255,255,255,.9);border-radius:30px;text-align:center;background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(250,241,255,.96));box-shadow:0 24px 80px rgba(91,70,130,.22);animation:giftRise .65s cubic-bezier(.2,.8,.2,1) both}
+@keyframes giftRise{from{transform:translateY(18px) scale(.97)}to{transform:none}}
+.daily-gift-chest{font-size:66px;line-height:1.25;filter:drop-shadow(0 8px 12px rgba(181,139,80,.2));margin:2px 0 12px}
+.daily-gift-card h2{font-size:clamp(25px,6vw,34px);margin:0 0 9px;color:#554b70}
+.daily-gift-card p{font-size:16px;line-height:1.55;margin:0 auto 17px;max-width:330px;color:#77708c}
+.daily-gift-reward{display:inline-flex;gap:9px;align-items:center;padding:12px 20px;margin:0 auto 19px;border-radius:20px;background:#f3edff;color:#6857a4;font-size:19px;font-weight:800}
+.daily-gift-card button,.reminder-toggle{border:0;border-radius:999px;padding:13px 23px;background:linear-gradient(120deg,#9884df,#df91b1);color:white;font:700 16px Nunito, sans-serif;cursor:pointer;box-shadow:0 7px 18px rgba(151,123,201,.22)}
+.daily-gift-card button:focus-visible,.reminder-toggle:focus-visible{outline:3px solid #8a75c8;outline-offset:3px}
+.daily-gift-note{display:block;margin-top:13px;font-size:12px;color:#9992a8}
+#gentleReminderBar{position:fixed;z-index:1000;right:14px;bottom:calc(82px + env(safe-area-inset-bottom));max-width:min(245px,calc(100vw - 28px));}
+#gentleReminderBar button{font:700 12px Nunito,sans-serif;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.82);color:#6d5d9d;box-shadow:0 5px 20px rgba(94,77,135,.12);backdrop-filter:blur(12px);cursor:pointer}
+@media (prefers-reduced-motion:reduce){#dailyGiftLayer.show,.daily-gift-card{animation:none!important}}
