@@ -82,5 +82,18 @@
   <!-- ===== Netlify ===== -->
   <script async src="/.netlify/scripts/ar" data-netlify-deploy-id="6acbd185c15e4a8a1e65553d" data-netlify-site-id="0de3f265-1793-4876-a415-ea521d2ec243" data-agent-runner-id="6acbd13f213767ba31bacaf7"></script>
   <script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="0de3f265-1793-4876-a415-ea521d2ec243" data-app-host="app.netlify.com" data-account-tier="free"></script>
+
+    <!-- Ежедневный подарок и мягкие напоминания -->
+  <div id="dailyGiftLayer" role="dialog" aria-modal="true" aria-labelledby="dailyGiftTitle">
+    <section class="daily-gift-card">
+      <div class="daily-gift-chest" aria-hidden="true">🎁</div>
+      <h2 id="dailyGiftTitle">Небольшой подарок для тебя</h2>
+      <p>Он уже здесь. Никакой спешки — просто маленькая радость, когда тебе удобно.</p>
+      <div class="daily-gift-reward" id="dailyGiftReward">✨ Твой сюрприз</div>
+      <div><button id="claimDailyGift" type="button">Забрать</button></div>
+      <small class="daily-gift-note">Можно просто побыть здесь. Ты ничего не должен(на).</small>
+    </section>
+  </div>
+  <div id="gentleReminderBar"><button id="enableGentleReminders" type="button">🔔 Включить напоминания</button></div>
 </body>
 </html>
