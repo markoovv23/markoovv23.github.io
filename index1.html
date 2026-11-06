@@ -95,5 +95,106 @@
     </section>
   </div>
   <div id="gentleReminderBar"><button id="enableGentleReminders" type="button">🔔 Включить напоминания</button></div>
+
+  <script>
+(() => {
+  'use strict';
+  const DAY = 86400000;
+  const giftKey = 'sp_daily_gift_v1';
+  const reminderKey = 'sp_gentle_reminder_v1';
+  const messages = [
+    'Твой подарок дня уже внутри. Забери, когда будет минутка',
+    'Привет! Твой сад в порядке, деревья растут. Я просто проверяю, как ты. Если захочешь — заходи на чай, ничего делать не обязательно',
+    'Ого, кажется, в твоем саду сегодня ночью произошло что-то интересное... Заглянешь посмотреть?',
+    'У тебя есть 1 минута? Выбирай: 1) открыть сегодняшний подарок или 2) просто погладить сову в саду. Никаких сложных задач!',
+    'День был долгим. Если хочешь, давай просто подышим вместе 2 минутки. Твой сад засыпает, и тебе пора отдыхать'
+  ];
+  const today = () => new Date().toLocaleDateString('en-CA');
+  const safeGet = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (_) { return null; } };
+  const safeSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
+  
+  let gift = safeGet(giftKey);
+  if (!gift || gift.date !== today()) {
+    gift = {date:today(), type:Math.random()<.5?'dew':'seed', claimed:false};
+    safeSet(giftKey,gift);
+  }
+  
+  const layer = document.getElementById('dailyGiftLayer');
+  const reward = document.getElementById('dailyGiftReward');
+  const claim = document.getElementById('claimDailyGift');
+  
+  if (reward) {
+    reward.textContent = gift.type === 'dew' ? '💧 +10 капелек' : '🌱 Семечко';
+  }
+  
+  if (!gift.claimed && layer) {
+    window.setTimeout(() => layer.classList.add('show'), 850);
+  }
+  
+  if (claim) {
+    claim.addEventListener('click', () => {
+      if (gift.claimed) { layer.classList.remove('show'); return; }
+      try {
+        if (typeof S !== 'undefined') {
+          if (gift.type === 'dew') S.dew = (Number(S.dew) || 0) + 10;
+          else S.dailySeeds = (Number(S.dailySeeds) || 0) + 1;
+          if (typeof save === 'function') save();
+        }
+      } catch (_) {}
+      gift.claimed = true;
+      safeSet(giftKey,gift);
+      layer.classList.remove('show');
+      if (typeof toast === 'function') toast(gift.type === 'dew' ? 'Подарок получен: +10 капелек 💧' : 'Подарок получен: семечко 🌱');
+    });
+  }
+
+  const reminderButton = document.getElementById('enableGentleReminders');
+  const updateReminderButton = () => {
+    if (!reminderButton) return;
+    if (!('Notification' in window)) {
+      reminderButton.textContent = 'Уведомления недоступны в этом браузере';
+      reminderButton.disabled = true;
+      return;
+    }
+    reminderButton.textContent = Notification.permission === 'granted' ? '🔔 Напоминания включены' :
+      Notification.permission === 'denied' ? 'Уведомления заблокированы в настройках браузера' : '🔔 Включить напоминания';
+  };
+  
+  const showDailyReminder = () => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const state = safeGet(reminderKey) || {};
+    const day = today();
+    if (state.lastDate === day) return;
+    const msg = messages[Math.floor(Math.random()*messages.length)];
+    try {
+      new Notification('Сад Прогресса 🌿', {body:msg, icon:'./icons/icon.svg', tag:'sp-daily-gentle'});
+      safeSet(reminderKey,{lastDate:day});
+    } catch (_) {}
+  };
+  
+  if (reminderButton) {
+    reminderButton.addEventListener('click', async () => {
+      if (!('Notification' in window)) { updateReminderButton(); return; }
+      try {
+        const permission = await Notification.requestPermission();
+        updateReminderButton();
+        if (permission === 'granted') {
+          safeSet(reminderKey, safeGet(reminderKey) || {});
+          if (typeof toast === 'function') toast('Напоминания включены. Они будут появляться, когда приложение открыто.');
+        }
+      } catch (_) { updateReminderButton(); }
+    });
+  }
+  
+  updateReminderButton();
+  window.setInterval(showDailyReminder, 60 * 1000);
+  window.addEventListener('focus', showDailyReminder);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) showDailyReminder(); });
+
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  }
+})();
+</script>
 </body>
 </html>
